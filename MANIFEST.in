@@ -1,0 +1,4 @@
+include README.md
+recursive-include layerdisplay/templates *
+recursive-include layerdisplay/translations *
+recursive-include layerdisplay/static *
