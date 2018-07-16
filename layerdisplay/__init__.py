@@ -68,7 +68,7 @@ class LayerDisplayPlugin(octoprint.plugin.StartupPlugin,
 				result = "%d / %d" % (self._currentLayer, self._analyzer.getLayerCount())
 			elif self._fileSelected:
 				result = "- / %d" % self._analyzer.getLayerCount()
-		self._plugin_manager.send_plugin_message(__plugin_name__, dict(layerString = result))
+		self._plugin_manager.send_plugin_message("LayerDisplay", dict(layerString = result))
 
 
 	def get_assets(self):
