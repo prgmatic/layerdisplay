@@ -72,12 +72,6 @@ class LayerDisplayPlugin(octoprint.plugin.StartupPlugin,
 
 
 	def get_assets(self):
-		return dict(
-				js=["js/LayerDisplay.js"]
-			)
+		return dict(js=["js/LayerDisplay.js"])
 
-
-__plugin_name__ = "LayerDisplay"
-__plugin_version__ = "0.1.0"
-__plugin_description__ = "Displays the current layer and total layers for a print job."
 __plugin_implementation__ = LayerDisplayPlugin()
