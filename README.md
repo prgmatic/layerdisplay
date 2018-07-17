@@ -4,4 +4,17 @@ Plugin for Octoprint that displays what layer a print job is on.
 
 ![Screenshot](https://i.imgur.com/v0PFLbV.png)
 
-LayerDisplay does not require special GCode comments. LayerDisplay analyzes the GCode before the a print starts to figure out where layer changes happen. LayerDisplay does not work when printing from the SD card.
+- **Does not require special GCode comments.** LayerDisplay analyzes the GCode before the a print starts to figure out where layer changes happen.
+- *LayerDisplay does not work when printing from the SD card.*
+
+## Installation
+
+~~Install via the bundled [Plugin Manager](http://docs.octoprint.org/en/master/bundledplugins/pluginmanager.html)~~ *submitted, will be available when approved* or manually using this URL:
+
+    https://github.com/chatrat12/layerdisplay/archive/master.zip
+
+## Feedback
+This is my first python project. I don't know enough about python to follow my usual design patterns. Feedback is greatly apperciated :)
+
+## TODO
+- Send layer data when client connects to host.
