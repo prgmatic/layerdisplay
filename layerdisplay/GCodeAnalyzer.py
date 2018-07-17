@@ -1,5 +1,5 @@
-import re
 from StepperTracker import StepperTracker, PositioningMode
+import GCodeLineParser
 
 class GCodeAnalyzer:
 	
@@ -21,11 +21,6 @@ class GCodeAnalyzer:
 		for line in gcode:
 			filePosition += len(line) + 1
 			lineIndex += 1
-			if not line:
-				continue
-			line = self.__stripLine(line)
-			if line == None:
-				continue
 			self.__handleLine(line, filePosition, gcodeSize)
 
 	def getLayerChangePositions(self):
@@ -35,7 +30,9 @@ class GCodeAnalyzer:
 		return len(self._layerChangePositions)
 
 	def __handleLine(self, line, filePosition, fileSize):
-		lineComponents = line.split()
+		lineComponents = GCodeLineParser.parse_line(line)
+		if lineComponents == None:
+			return
 		gCode = lineComponents[0]
 
 		if gCode == 'G0' or gCode == 'G1' or gCode == 'G2' or gCode == 'G3':
@@ -62,13 +59,3 @@ class GCodeAnalyzer:
 			self._extruder.setPositioningMode(PositioningMode.absolute)
 		elif gCode == 'M83':
 			self._extruder.setPositioningMode(PositioningMode.relative)
-		
-
-	def __stripLine(self, line):
-		# split line by comment character,
-		# only text to left of first comment character is valid.
-		result = re.split('[\(;]', line)[0]
-		result = result.strip()
-		if len(result) == 0:
-			return None
-		return result
