@@ -85,7 +85,7 @@ class LayerDisplayPlugin(octoprint.plugin.StartupPlugin,
 				user="chatrat12",
 				repo="LayerDisplay",
 
-				pip="https://github.com/chatrat12/layerdisplay/archive/{target}.zip"
+				pip="https://github.com/chatrat12/layerdisplay/archive/{target_version}.zip"
 			)
 		)
 
