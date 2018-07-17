@@ -1,7 +1,6 @@
 $(function () {
     function LayerDisplayViewModel(parameters) {
         var self = this;
-
         layerString = ko.observable("-");
 
         self.onStartup = function () {
@@ -11,7 +10,22 @@ $(function () {
                 var tooltip = gettext("Might be inaccurate!");
                 element.before(text + ": <strong title='" + tooltip + "' data-bind='text: layerString'></strong><br>");
             }
+            self.retrieveData();
         };
+
+        self.retrieveData = function () {
+            
+            var url = "/api" + PLUGIN_BASEURL + "layerdisplay";
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                success: function (data) {
+                    layerString(data.layerString);
+                }
+            })
+        }
 
         self.onDataUpdaterPluginMessage = function (plugin, data) {
             if (plugin === "LayerDisplay") {

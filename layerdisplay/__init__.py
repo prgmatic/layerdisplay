@@ -10,6 +10,7 @@ from layerdisplay.PrintJob import PrintJob
 
 class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 					     octoprint.plugin.AssetPlugin,
+						 octoprint.plugin.SimpleApiPlugin,
 					     octoprint.printer.PrinterCallback):
 
 	print_job = None
@@ -52,6 +53,12 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 
 	def get_update_information(self):
 		return UpdateInfo.get_update_information(self)
+
+	# SimpleApiPlugin
+	def on_api_get(self, request):
+		import flask
+		result = LayerInfoPusher.get_layer_info_string(self.print_job)
+		return flask.jsonify(layerString = result)
 
 def __plugin_load__():
 	global __plugin_implementation__
