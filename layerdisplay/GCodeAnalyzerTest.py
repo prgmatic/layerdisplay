@@ -1,4 +1,4 @@
-from GCodeAnalyzer import GCodeAnalyzer
+import GCodeAnalyzer
 import time
 import os
 
@@ -15,12 +15,11 @@ start = time.time()
 
 gcode = file(fileName, "r")
 fileSize = os.path.getsize(fileName)
-analyzer = GCodeAnalyzer()
-analyzer.analyze_gcode(gcode, fileSize)
+layerInfo = GCodeAnalyzer.get_print_job_layer_information(gcode, fileSize)
 
 end = time.time()
 print("Analyzation complete")
 print(end - start)
-print("%d layers in gcode" % len(analyzer.getLayerChangePositions()))
+print("%d layers in gcode" % layerInfo.get_layer_count())
 
 gcode.close()
