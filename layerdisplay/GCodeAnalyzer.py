@@ -2,48 +2,48 @@ from StepperTracker import StepperTracker, PositioningMode
 from PrintJobLayerInformation import PrintJobLayerInformation
 import GCodeLineParser
 
-def get_print_job_layer_information(gcode, fileSize):
+def get_print_job_layer_information(gcode, file_size):
 	z_axis =    StepperTracker()
 	extruder = StepperTracker()
 	previous_extrude_height = 0
 	layer_change_positions = []
 
-	filePosition = 0
+	file_position = 0
 
 	for line in gcode:
 		# Keep track of out position in the file
-		filePosition += len(line) + 1
+		file_position += len(line) + 1
 
 		# Parse line into components
-		lineComponents = GCodeLineParser.parse_line(line)
-		if lineComponents == None:
+		line_components = GCodeLineParser.parse_line(line)
+		if line_components == None:
 			continue
 
-		gCode = lineComponents[0]
+		gCode = line_components[0]
 		if gCode == 'G0' or gCode == 'G1' or gCode == 'G2' or gCode == 'G3':
-			for componentIndex in range(1, len(lineComponents)):
+			for component_index in range(1, len(line_components)):
 				# Handle extrusion component of line
-				if lineComponents[componentIndex][0] == 'E':
-					value = float(lineComponents[componentIndex][1:])
-					extruder.setPosition(value)
+				if line_components[component_index][0] == 'E':
+					value = float(line_components[component_index][1:])
+					extruder.set_position(value)
 					# Check if extruder extruded and not retracted
-					if extruder.getAbsolutePosition() > extruder.getPreviousAbsolutePosition():
+					if extruder.get_absolute_position() > extruder.get_previous_absolute_position():
 						# See if extruded at higher z height then previous extrusion z height
-						if z_axis.getAbsolutePosition() > previous_extrude_height:
-							layer_change_positions.append(float(filePosition) / fileSize)
-							previous_extrude_height = z_axis.getAbsolutePosition()
+						if z_axis.get_absolute_position() > previous_extrude_height:
+							layer_change_positions.append(float(file_position) / file_size)
+							previous_extrude_height = z_axis.get_absolute_position()
 				# Handle Z component of line
-				elif lineComponents[componentIndex][0] == 'Z':
-					value = float(lineComponents[componentIndex][1:])
-					z_axis.setPosition(value)
+				elif line_components[component_index][0] == 'Z':
+					value = float(line_components[component_index][1:])
+					z_axis.set_position(value)
 		elif gCode == 'G90':
-			z_axis.setPositioningMode(PositioningMode.absolute)
+			z_axis.set_positioning_mode(PositioningMode.absolute)
 		elif gCode == 'G91':
-			z_axis.setPositioningMode(PositioningMode.relative)
+			z_axis.set_positioning_mode(PositioningMode.relative)
 		elif gCode == 'M82':
-			extruder.setPositioningMode(PositioningMode.absolute)
+			extruder.set_positioning_mode(PositioningMode.absolute)
 		elif gCode == 'M83':
-			extruder.setPositioningMode(PositioningMode.relative)
+			extruder.set_positioning_mode(PositioningMode.relative)
 
 	return PrintJobLayerInformation(layer_change_positions)
 

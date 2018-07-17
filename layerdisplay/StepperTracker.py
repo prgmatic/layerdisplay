@@ -4,27 +4,27 @@ class PositioningMode:
 
 class StepperTracker:
 
-	__absolutePosition = 0
-	__previousAbsolutePosition = 0
+	_absolute_position = 0
+	_previous_absolute_position = 0
 
-	__inputMode = PositioningMode.absolute
+	_input_mode = PositioningMode.absolute
 
 	
-	def getAbsolutePosition(self):
-		return self.__absolutePosition
-	def getPreviousAbsolutePosition(self):
-		return self.__previousAbsolutePosition
+	def get_absolute_position(self):
+		return self._absolute_position
+	def get_previous_absolute_position(self):
+		return self._previous_absolute_position
 
-	def setPosition(self, newPosition):
-		self.__previousAbsolutePosition = self.__absolutePosition
-		if self.__inputMode == PositioningMode.absolute:
-			self.__absolutePosition = newPosition
+	def set_position(self, new_position):
+		self._previous_absolute_position = self._absolute_position
+		if self._input_mode == PositioningMode.absolute:
+			self._absolute_position = new_position
 		else:
-			self.__absolutePosition += newPosition
+			self._absolute_position += new_position
 
-	def getPositioningMode(self):
-		return __inputMode
-	def setPositioningMode(self, newMode):
-		self.__inputMode = newMode
+	def get_positioning_mode(self):
+		return _input_mode
+	def set_positioning_mode(self, new_mode):
+		self._input_mode = new_mode
 
 

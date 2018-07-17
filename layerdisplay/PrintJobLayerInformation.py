@@ -1,6 +1,6 @@
 class PrintJobLayerInformation:
-	def __init__(self, layerChangePositions):
-		self._layer_change_positions = layerChangePositions
+	def __init__(self, layer_change_positions):
+		self._layer_change_positions = layer_change_positions
 
 	def get_layer_count(self):
 		return len(self._layer_change_positions)

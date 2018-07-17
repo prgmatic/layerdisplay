@@ -1,10 +1,10 @@
 import re
 
 def strip_comment(line):
-	commentPos = line.find(';')
-	if commentPos == -1:
+	comment_pos = line.find(';')
+	if comment_pos == -1:
 		return line
-	return line[:commentPos].strip()
+	return line[:comment_pos].strip()
 
 def parse_line(line):
 	line = strip_comment(line)
