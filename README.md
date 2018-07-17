@@ -9,7 +9,7 @@ Plugin for Octoprint that displays what layer a print job is on.
 
 ## Installation
 
-Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager) 
+Install via the bundled [Plugin Manager](http://docs.octoprint.org/en/master/bundledplugins/pluginmanager.html) 
 or manually using this URL:
 
     https://github.com/chatrat12/layerdisplay/archive/master.zip
