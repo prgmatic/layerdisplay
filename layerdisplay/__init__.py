@@ -4,70 +4,53 @@ from __future__ import absolute_import
 import os
 import octoprint.plugin
 from octoprint.events import Events
-from layerdisplay.GCodeAnalyzer import GCodeAnalyzer
+from layerdisplay.PrintJob import PrintJob
 
-class LayerDisplayPlugin(octoprint.plugin.StartupPlugin,
-					     octoprint.plugin.EventHandlerPlugin,
+class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 					     octoprint.plugin.AssetPlugin,
 					     octoprint.printer.PrinterCallback):
 
-	def on_after_startup(self):
-		self._analyzer = GCodeAnalyzer()
-		self._printing = False
-		self._fileSelected = False
-		self._fileRead = False
+	print_job = None
 
 	def on_event(self, event, payload):
 		if event == Events.FILE_SELECTED:
-			# Can't analyze gcode on sd card.
-			if payload['origin'] != 'local':
-				return
-			self._fileRead = True
-			self._fileSelected = True
-			self.__analyzeGCode(payload['file'])
-			self.updateCurrentLayerString();
+			self.print_job = PrintJob(payload)
+			self.print_job.on_layer_change.register_callback(self.on_layer_change)
+			self.push_current_layer();
 
 		elif event == Events.FILE_DESELECTED:
-			self._fileSelected = False
-			self._fileRead = False
-			self.updateCurrentLayerString();
+			self.print_job = None
+			self.push_current_layer();
 
 		elif event == Events.PRINT_STARTED:
-			self._currentLayer = 1
-			self._printing = True
+			if self.print_job:
+				self.print_job.started()
 			self._printer.register_callback(self)
-			self.updateCurrentLayerString();
+			self.push_current_layer();
 			
 		elif event == Events.PRINT_CANCELLED or event == Events.PRINT_DONE or event == Events.PRINT_FAILED:
-			self._printing = False
+			if self.print_job:
+				self.print_job.stopped()
 			self._printer.unregister_callback(self)
-			self.updateCurrentLayerString();
+			self.push_current_layer();
 
-	def __analyzeGCode(self, filePath):
-		gcode = file(filePath, "r")
-		fileSize = os.path.getsize(filePath)
-		self._analyzer.analyze_gcode(gcode, fileSize)
-		self._logger.info("%d layers in gcode" % self._analyzer.getLayerCount())
+
 
 	def on_printer_send_current_data(self, data):
-		if data['state']['flags']['printing'] and self._fileRead:
-			totalLayers = self._analyzer.getLayerCount()
-			if self._currentLayer < totalLayers:
-				nextLinePercentage = self._analyzer.getLayerChangePositions()[self._currentLayer]
-				percentage = data['progress']['completion'] / 100
-				while percentage >= nextLinePercentage and self._currentLayer < totalLayers:
-					self._currentLayer += 1
-					self.updateCurrentLayerString()
-					if self._currentLayer < totalLayers:
-						nextLinePercentage = self._analyzer.getLayerChangePositions()[self._currentLayer]
+		if data['state']['flags']['printing'] and self.print_job != None:
+			progress = data['progress']['completion'] / 100
+			self.print_job.set_progress(progress)
 
-	def updateCurrentLayerString(self):
+	def on_layer_change(self):
+		self.push_current_layer()
+
+	def push_current_layer(self):
 		result = "-"
-		if self._fileRead:
-			if self._printing:
-				result = "%d / %d" % (self._currentLayer, self._analyzer.getLayerCount())
-			elif self._fileSelected:
-				result = "- / %d" % self._analyzer.getLayerCount()
+		if self.print_job and self.print_job.layer_change_info:
+			if self.print_job.printing:
+				result = "%d / %d" % (self.print_job.current_layer, self.print_job.get_layer_count())
+			else:
+				result = "- / %d" % self.print_job.get_layer_count()
 		self._plugin_manager.send_plugin_message(self._plugin_name, dict(layerString = result))
 
 
