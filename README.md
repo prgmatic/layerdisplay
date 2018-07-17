@@ -13,3 +13,6 @@ Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wik
 or manually using this URL:
 
     https://github.com/chatrat12/layerdisplay/archive/master.zip
+
+## TODO
+- Send layer data when client connects to host.
