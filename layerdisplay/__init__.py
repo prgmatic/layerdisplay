@@ -3,6 +3,8 @@ from __future__ import absolute_import
 
 import os
 import octoprint.plugin
+import layerdisplay.UpdateInfo
+import layerdisplay.LayerInfoPusher
 from octoprint.events import Events
 from layerdisplay.PrintJob import PrintJob
 
@@ -34,8 +36,6 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 			self._printer.unregister_callback(self)
 			self.push_current_layer();
 
-
-
 	def on_printer_send_current_data(self, data):
 		if data['state']['flags']['printing'] and self.print_job != None:
 			progress = data['progress']['completion'] / 100
@@ -45,32 +45,13 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 		self.push_current_layer()
 
 	def push_current_layer(self):
-		result = "-"
-		if self.print_job and self.print_job.layer_change_info:
-			if self.print_job.printing:
-				result = "%d / %d" % (self.print_job.current_layer, self.print_job.get_layer_count())
-			else:
-				result = "- / %d" % self.print_job.get_layer_count()
-		self._plugin_manager.send_plugin_message(self._plugin_name, dict(layerString = result))
-
+		LayerInfoPusher.push(self, self.print_job)
 
 	def get_assets(self):
 		return dict(js=["js/LayerDisplay.js"])
 
 	def get_update_information(self):
-		return dict(
-			layerdisplay=dict(
-				displayName=self._plugin_name,
-				displayVersion=self._plugin_version,
-
-				type="github_release",
-				current=self._plugin_version,
-				user="chatrat12",
-				repo="LayerDisplay",
-
-				pip="https://github.com/chatrat12/layerdisplay/archive/{target_version}.zip"
-			)
-		)
+		return UpdateInfo.get_update_information(self)
 
 def __plugin_load__():
 	global __plugin_implementation__
