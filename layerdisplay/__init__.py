@@ -37,7 +37,7 @@ class LayerDisplayPlugin(octoprint.plugin.StartupPlugin,
 			self._printing = True
 			self._printer.register_callback(self)
 			self.updateCurrentLayerString();
-
+			
 		elif event == Events.PRINT_CANCELLED or event == Events.PRINT_DONE or event == Events.PRINT_FAILED:
 			self._printing = False
 			self._printer.unregister_callback(self)
@@ -68,10 +68,32 @@ class LayerDisplayPlugin(octoprint.plugin.StartupPlugin,
 				result = "%d / %d" % (self._currentLayer, self._analyzer.getLayerCount())
 			elif self._fileSelected:
 				result = "- / %d" % self._analyzer.getLayerCount()
-		self._plugin_manager.send_plugin_message("LayerDisplay", dict(layerString = result))
+		self._plugin_manager.send_plugin_message(self._plugin_name, dict(layerString = result))
 
 
 	def get_assets(self):
 		return dict(js=["js/LayerDisplay.js"])
 
-__plugin_implementation__ = LayerDisplayPlugin()
+	def get_update_information(self):
+		return dict(
+			layerdisplay=dict(
+				displayName=self._plugin_name,
+				displayVersion=self._plugin_version,
+
+				type="github_release",
+				current=self._plugin_version,
+				user="chatrat12",
+				repo="LayerDisplay",
+
+				pip="https://github.com/chatrat12/layerdisplay/archive/{target}.zip"
+			)
+		)
+
+def __plugin_load__():
+	global __plugin_implementation__
+	__plugin_implementation__ = LayerDisplayPlugin()
+
+	global __plugin_hooks__
+	__plugin_hooks__ = {
+		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+	}

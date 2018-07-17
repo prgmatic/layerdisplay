@@ -14,7 +14,7 @@ $(function () {
         };
 
         self.onDataUpdaterPluginMessage = function (plugin, data) {
-            if (plugin == "LayerDisplay") {
+            if (plugin === "LayerDisplay") {
                 layerString(data.layerString);
             }
         }
