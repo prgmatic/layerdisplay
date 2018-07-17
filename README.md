@@ -15,6 +15,3 @@ Plugin for Octoprint that displays what layer a print job is on.
 
 ## Feedback
 This is my first python project. I don't know enough about python to follow my usual design patterns. Feedback is greatly apperciated :)
-
-## TODO
-- Send layer data when client connects to host.
