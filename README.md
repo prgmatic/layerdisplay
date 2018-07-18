@@ -9,12 +9,9 @@ Plugin for Octoprint that displays what layer a print job is on.
 
 ## Installation
 
-~~Install via the bundled [Plugin Manager](http://docs.octoprint.org/en/master/bundledplugins/pluginmanager.html)~~ *submitted, will be available when approved* or manually using this URL:
+Install via the bundled [Plugin Manager](http://docs.octoprint.org/en/master/bundledplugins/pluginmanager.html) or manually using this URL:
 
     https://github.com/chatrat12/layerdisplay/archive/master.zip
 
 ## Feedback
 This is my first python project. I don't know enough about python to follow my usual design patterns. Feedback is greatly apperciated :)
-
-## TODO
-- Send layer data when client connects to host.
