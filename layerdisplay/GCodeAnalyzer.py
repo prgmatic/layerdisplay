@@ -16,7 +16,7 @@ def get_print_job_layer_information(gcode, file_size):
 
 		# Parse line into components
 		line_components = GCodeLineParser.parse_line(line)
-		if line_components == None:
+		if not line_components:
 			continue
 
 		gCode = line_components[0]
