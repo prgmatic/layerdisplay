@@ -1,20 +1,26 @@
 import os
-import GCodeAnalyzer
+from GCodeAnalyzer import GCodeAnalyzer
 from Event import Event
+from threading import Thread, Timer
+import threading
 
 class PrintJob:
 
 	layer_change_info = None
 	on_layer_change = Event()
+	on_analysis_complete = Event()
 	printing = False
+	file_size = -1
 
 	
 	def __init__(self, file_selected_payload):
 		self.file_name = file_selected_payload['name']
 		self.local = file_selected_payload['origin'] == 'local'
+		self.file_path = file_selected_payload['file']
 
 		if self.local:
-			self.layer_change_info = self._get_layer_info(file_selected_payload['file'])
+			self.file_size = os.path.getsize(self.file_path)
+			self._start_analysis(file_selected_payload['file'])
 		self.current_layer = 1
 
 	
@@ -27,6 +33,9 @@ class PrintJob:
 
 	def get_layer_count(self):
 		return self.layer_change_info.get_layer_count()
+
+	def is_analysing_gcode(self):
+		return self._gcode_analyzer and self._gcode_analyzer.is_working()
 
 	def set_progress(self, progress):
 		# Verify printing from octoprint and layer change info is available
@@ -47,8 +56,26 @@ class PrintJob:
 			if self.current_layer != prev_layer:
 				self.on_layer_change.invoke()
 
-	def _get_layer_info(self, file_path):
-		gcode = file(file_path, "r")
-		fileSize = os.path.getsize(file_path)
-		return GCodeAnalyzer.get_print_job_layer_information(gcode, fileSize)
+	def _start_analysis(self, file_path):
+		self._gcode_analyzer = GCodeAnalyzer()
+		self._gcode_analyzer.prepare_for_job()
+		def do_analysis():
+			gcode = file(file_path, "r")
+			fileSize = os.path.getsize(file_path)
+			self.layer_change_info = self._gcode_analyzer.get_print_job_layer_information(gcode, self.file_size)
+			self.on_analysis_complete.invoke()
+
+		analysis_thread = Thread(target=do_analysis)
+		analysis_thread.start()
+
+	def to_string(self):
+		if self._gcode_analyzer and self._gcode_analyzer.is_working():
+			file_pos = float(self._gcode_analyzer.get_current_file_position())
+			return "Analysing: %%%.1f" %  (file_pos / self.file_size * 100)
+		elif self.layer_change_info:
+			if self.printing:
+				return "%d / %d" % (self.current_layer, self.get_layer_count())
+			else:
+				return "- / %d" % self.get_layer_count()
+		return "-"
 
