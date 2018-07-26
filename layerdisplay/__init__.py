@@ -7,6 +7,7 @@ import layerdisplay.UpdateInfo
 import layerdisplay.LayerInfoPusher
 from octoprint.events import Events
 from layerdisplay.PrintJob import PrintJob
+from threading import Timer
 
 class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 					     octoprint.plugin.AssetPlugin,
@@ -18,34 +19,39 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 	def on_event(self, event, payload):
 		if event == Events.FILE_SELECTED:
 			self.print_job = PrintJob(payload)
-			self.print_job.on_layer_change.register_callback(self.on_layer_change)
-			self.push_current_layer();
+			if self.print_job.is_analysing_gcode():
+				self.send_analysis_progress_updates()
+				self.print_job.on_analysis_complete.register_callback(self.push_layer_info)
+			self.print_job.on_layer_change.register_callback(self.push_layer_info)
+			self.push_layer_info()
 
 		elif event == Events.FILE_DESELECTED:
 			self.print_job = None
-			self.push_current_layer();
+			self.push_layer_info()
 
 		elif event == Events.PRINT_STARTED:
 			if self.print_job:
 				self.print_job.started()
 			self._printer.register_callback(self)
-			self.push_current_layer();
+			self.push_layer_info()
 			
 		elif event == Events.PRINT_CANCELLED or event == Events.PRINT_DONE or event == Events.PRINT_FAILED:
 			if self.print_job:
 				self.print_job.stopped()
 			self._printer.unregister_callback(self)
-			self.push_current_layer();
+			self.push_layer_info()
 
 	def on_printer_send_current_data(self, data):
 		if data['state']['flags']['printing'] and self.print_job != None:
 			progress = data['progress']['completion'] / 100
 			self.print_job.set_progress(progress)
 
-	def on_layer_change(self):
-		self.push_current_layer()
+	def send_analysis_progress_updates(self):
+		if self.print_job and self.print_job.is_analysing_gcode():
+			Timer(0.5, self.send_analysis_progress_updates).start()
+			self.push_layer_info()
 
-	def push_current_layer(self):
+	def push_layer_info(self):
 		LayerInfoPusher.push(self, self.print_job)
 
 	def get_assets(self):
