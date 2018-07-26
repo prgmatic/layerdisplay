@@ -12,6 +12,10 @@ Plugin for Octoprint that displays what layer a print job is on.
 Install via the bundled [Plugin Manager](http://docs.octoprint.org/en/master/bundledplugins/pluginmanager.html) or manually using this URL:
 
     https://github.com/chatrat12/layerdisplay/archive/master.zip
+    
+## TODO
+- **Run GCode Analyis on seperate thread** GCodeAnalysis currently blocks print jobs when analysing large GCode files.
+- **Error checking** Handle any possible errors (such as read errors) and report them to the user.
 
 ## Feedback
 This is my first python project. I don't know enough about python to follow my usual design patterns. Feedback is greatly apperciated :)
