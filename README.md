@@ -14,7 +14,6 @@ Install via the bundled [Plugin Manager](http://docs.octoprint.org/en/master/bun
     https://github.com/chatrat12/layerdisplay/archive/master.zip
     
 ## TODO
-- **Run GCode Analyis on seperate thread** GCodeAnalysis currently blocks print jobs when analysing large GCode files.
 - **Error checking** Handle any possible errors (such as read errors) and report them to the user.
 
 ## Feedback
