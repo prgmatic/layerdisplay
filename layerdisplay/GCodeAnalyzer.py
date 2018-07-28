@@ -47,7 +47,7 @@ class GCodeAnalyzer:
 						# Check if extruder extruded and not retracted
 						if extruder.get_absolute_position() > extruder.get_previous_absolute_position():
 							# See if extruded at higher z height then previous extrusion z height
-							if z_axis.get_absolute_position() > previous_extrude_height:
+							if z_axis.get_absolute_position() != previous_extrude_height:
 								layer_change_positions.append(float(file_position) / file_size)
 								previous_extrude_height = z_axis.get_absolute_position()
 					# Handle Z component of line
