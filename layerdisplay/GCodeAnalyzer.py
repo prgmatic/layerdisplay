@@ -2,6 +2,8 @@ from StepperTracker import StepperTracker, PositioningMode
 from PrintJobLayerInformation import PrintJobLayerInformation
 import GCodeLineParser
 
+EXTRUSIONS_REQUIRED_FOR_FIRST_LAYER = 3
+
 class GCodeAnalyzer:
 
 	def __init__(self):
@@ -20,9 +22,10 @@ class GCodeAnalyzer:
 	def get_print_job_layer_information(self, gcode, file_size):
 		self._progress = 0
 		self._working = True
-		z_axis =    StepperTracker()
+		z_axis =   StepperTracker()
 		extruder = StepperTracker()
 		previous_extrude_height = 0
+		number_of_extrusions_this_layer = 0
 		layer_change_positions = []
 
 		file_position = 0
@@ -48,8 +51,16 @@ class GCodeAnalyzer:
 						if extruder.get_absolute_position() > extruder.get_previous_absolute_position():
 							# See if extruded at higher z height then previous extrusion z height
 							if z_axis.get_absolute_position() != previous_extrude_height:
-								layer_change_positions.append(float(file_position) / file_size)
+								# In order to ignore purges as layers, we make sure more than one extrude
+								# has happened at this height to verify it is actually a layer.
+								if len(layer_change_positions) or number_of_extrusions_this_layer >= EXTRUSIONS_REQUIRED_FOR_FIRST_LAYER:
+									layer_change_positions.append(float(file_position) / file_size)
 								previous_extrude_height = z_axis.get_absolute_position()
+								# Rest number of extrusions this layer since moving to new one
+								number_of_extrusions_this_layer = 1
+							# keep track of how many extrusion happened this layer
+							else:
+								number_of_extrusions_this_layer += 1
 					# Handle Z component of line
 					elif line_components[component_index][0] == 'Z':
 						value = float(line_components[component_index][1:])

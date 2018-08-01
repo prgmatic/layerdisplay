@@ -21,11 +21,11 @@ class PrintJob:
 		if self.local:
 			self.file_size = os.path.getsize(self.file_path)
 			self._start_analysis(file_selected_payload['file'])
-		self.current_layer = 1
+		self.current_layer = 0
 
 	
 	def started(self):
-		self.current_layer = 1
+		self.current_layer = 0
 		self.printing = True
 
 	def stopped(self):
@@ -74,7 +74,7 @@ class PrintJob:
 			return "Analysing: %%%.1f" %  (file_pos / self.file_size * 100)
 		elif self.layer_change_info:
 			if self.printing:
-				return "%d / %d" % (self.current_layer, self.get_layer_count())
+				return "%d / %d" % (self.current_layer + 1, self.get_layer_count())
 			else:
 				return "- / %d" % self.get_layer_count()
 		return "-"
