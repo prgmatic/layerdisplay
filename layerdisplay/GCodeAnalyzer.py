@@ -32,7 +32,7 @@ class GCodeAnalyzer:
 
 		for line in gcode:
 			# Keep track of out position in the file
-			file_position += len(line) + 1
+			file_position = gcode.tell() + len(line)
 			self._current_file_position = file_position
 
 			# Parse line into components
