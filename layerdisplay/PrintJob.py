@@ -12,18 +12,18 @@ class PrintJob:
 	printing = False
 	file_size = -1
 
-	
-	def __init__(self, file_selected_payload):
-		self.file_name = file_selected_payload['name']
-		self.local = file_selected_payload['origin'] == 'local'
-		self.file_path = file_selected_payload['file']
+
+	def __init__(self, file_path, is_local):
+		self.file_path = file_path
+		self.file_name = os.path.basename(self.file_path)
+		self.local = is_local
 
 		if self.local:
 			self.file_size = os.path.getsize(self.file_path)
-			self._start_analysis(file_selected_payload['file'])
+			self._start_analysis(self.file_path)
 		self.current_layer = 0
 
-	
+
 	def started(self):
 		self.current_layer = 0
 		self.printing = True

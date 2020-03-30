@@ -18,7 +18,11 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 
 	def on_event(self, event, payload):
 		if event == Events.FILE_SELECTED:
-			self.print_job = PrintJob(payload)
+			is_local = payload.get('origin') == 'local'
+			file_path = self._file_manager.path_on_disk(
+				payload.get("origin"), payload.get("path")
+			)
+			self.print_job = PrintJob(file_path, is_local)
 			if self.print_job.is_analysing_gcode():
 				self.send_analysis_progress_updates()
 				self.print_job.on_analysis_complete.register_callback(self.push_layer_info)
