@@ -70,6 +70,8 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 		result = LayerInfoPusher.get_layer_info_string(self.print_job)
 		return flask.jsonify(layerString = result)
 
+__python_compat__ = ">=2.7,<4"
+
 def __plugin_load__():
 	global __plugin_implementation__
 	__plugin_implementation__ = LayerDisplayPlugin()
