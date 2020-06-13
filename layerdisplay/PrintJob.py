@@ -1,6 +1,6 @@
 import os
-from GCodeAnalyzer import GCodeAnalyzer
-from Event import Event
+from .GCodeAnalyzer import GCodeAnalyzer
+from .Event import Event
 from threading import Thread, Timer
 import threading
 

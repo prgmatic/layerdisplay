@@ -1,6 +1,6 @@
-from StepperTracker import StepperTracker, PositioningMode
-from PrintJobLayerInformation import PrintJobLayerInformation
-import GCodeLineParser
+from .StepperTracker import StepperTracker, PositioningMode
+from .PrintJobLayerInformation import PrintJobLayerInformation
+from . import GCodeLineParser
 
 EXTRUSIONS_REQUIRED_FOR_FIRST_LAYER = 3
 

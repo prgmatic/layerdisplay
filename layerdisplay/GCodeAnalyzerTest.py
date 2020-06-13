@@ -1,4 +1,4 @@
-from GCodeAnalyzer import GCodeAnalyzer
+from .GCodeAnalyzer import GCodeAnalyzer
 import time
 import os
 import threading
