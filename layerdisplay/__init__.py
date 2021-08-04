@@ -46,7 +46,7 @@ class LayerDisplayPlugin(octoprint.plugin.EventHandlerPlugin,
 			self.push_layer_info()
 
 	def on_printer_send_current_data(self, data):
-		if data['state']['flags']['printing'] and self.print_job != None:
+		if data['state']['flags']['printing'] and self.print_job != None and data['progress'] and data['progress']['completion']:
 			progress = data['progress']['completion'] / 100
 			self.print_job.set_progress(progress)
 
